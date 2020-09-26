@@ -148,7 +148,6 @@ func_install() {
 	step_setup_fluxcp
 	step_setup_phpmyadmin
 
-	step_setup_fullclient
 	step_finalise_imports
 	step_finalise_script
 }
@@ -422,59 +421,6 @@ step_setup_phpmyadmin() {
 	chmod 0660 ${LOCAL_WWW_ROOT}/phpmyadmin/config.inc.php
 	ln -s ${LOCAL_WWW_ROOT} ${LOCAL_DESKTOP}/phpMyAdmin
 	echo ""
-}
-
-step_setup_fullclient() {
-	print_header "Creating Full Downloadable Client"
-	echo "This step will take around 10 minutes. Now is the perfect time to go"
-	echo "make a nice cup of coffee. The full client is also around 4GB. Please"
-	echo "ensure you have enough disk space!"
-	if [ $DEV -eq 1 ]
-	then
-		echo "${YELLOW}Dev Version; Skipping....${NC}"
-	else
-
-		mkdir -p ${LOCAL_WWW_ROOT}/downloads/
-		cd ${LOCAL_WWW_ROOT}/downloads/
-		wget -q ${URL_FULLCLIENT}
-		unzip -qq client.zip
-		rm client.zip
-		mkdir -p ${LOCAL_WWW_ROOT}/downloads/client/data/
-		echo "<?xml version=\"1.0\" encoding=\"euc-kr\" ?>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "<clientinfo>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "	<desc>Ragnarok Client Information</desc>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "	<servicetype>korea</servicetype>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "	<servertype>primary</servertype>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "	<connection>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "		<display>Ragnarok Online</display>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "      		<address>${SERVER_IP}</address>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "      		<port>6900</port>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "      		<version>55</version>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "      		<langtype>1</langtype>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "		<loading>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "			<image>loading00.jpg</image>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "			<image>loading01.jpg</image>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "		</loading>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "		<aid>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "			<admin>2000000</admin>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "		</aid>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "   	</connection>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		echo "</clientinfo>" >> ${LOCAL_WWW_ROOT}/downloads/client/data/sclientinfo.xml
-		cd ${LOCAL_WWW_ROOT}/downloads/client/
-		wget -q ${URL_CERVANTES_SCRIPTS}/roclient.exe
-
-		# use rsu.pack to create client grf
-
-		cd ${LOCAL_WWW_ROOT}/downloads/
-		zip -qqrm fullclient.zip client
-		cd ${LOCAL_WWW_ROOT}/downloads/
-		rm -rf client/
-		cd ${LOCAL_WWW_ROOT}/data/schemas/logindb/
-		wget -q ${URL_CERVANTES_SCRIPTS}/cp_cmspages.20170808161901.sql
-		chown -R www-data:www-data ${LOCAL_WWW_ROOT}
-		cd /home/
-		echo ""
-	fi
 }
 
 step_finalise_imports() {
